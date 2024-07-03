@@ -1,29 +1,40 @@
-import React from 'react';
-import { useEffect ,useState} from 'react';
+import React, { useEffect, useState } from 'react';
+import WorkoutDetails from '../components/WorkoutDetails';
+
 
 
 const Home = () => {
-   const [workouts,setWorkouts] = useEffect(null)
+   const [workouts, setWorkouts] = useState(null);
 
-   useEffect(() => { 
-      const fetchWorkouts = async() => { 
-         const response = await fetch('http://localhost:3000/api/workouts')
-         const json = await response.json() //json is a array of workouts
+   useEffect(() => {
+      const fetchWorkouts = async () => {
+         try {
+            const response = await fetch('/api/workouts');
+            const json = await response.json(); // json is an array of workouts
 
-         if (response.ok) {
-            setWorkouts(json) //json is a array of workouts
+            if (response.ok) {
+               setWorkouts(json); // Set the workouts state with the fetched data
+            } else {
+               console.error('Failed to fetch workouts:', json);
+            }
+         } catch (error) {
+            console.error('An error occurred while fetching workouts:', error);
          }
-      }
-      fetchWorkouts()
-   },[])
+      };
+
+      fetchWorkouts();
+   }, []); // Dependency array to run the effect once
 
    return (
       <div className="home">
          <div className="workouts">
-            {workouts && workouts.map(()=>(
-               <p key={workouts._id}>{ workouts.title}</p>
+            {workouts && workouts.map((workout) => (
+               <WorkoutDetails
+                  key={workout._id}
+                  workout={workout}
+               />
             ))}
-       </div>
+         </div>
       </div>
    );
 }
